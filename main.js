@@ -182,9 +182,9 @@ function addEmployee() {
         // get the information of the role chose
         var title;
         var role_id;
-        console.log(answer.role);
+        // console.log(answer.role);
         for (var i = 0; i < results.length; i++) {
-          console.log(results[i]);
+          // console.log(results[i]);
           if (results[i].title === answer.role) {
 
             title = results[i].title;
@@ -192,7 +192,7 @@ function addEmployee() {
             role_id = results[i].id;
           }
         }
-        
+
         console.log("New Employee Name: " + answer.first_name + " " + answer.last_name);
         console.log("The title of role is: " + title);
         console.log("The role id = " + role_id);
@@ -286,55 +286,6 @@ function addEmployee() {
 
 
 
-// function addRole() {
-//   console.log("addrole");
-//   // query the database for all department Ids
-//   connection.query("SELECT * FROM department", function (err, empdata) {
-//     if (err) throw err;
-//     // once you have the roles, prompt the user for which they'd like to bid on
-//     inquirer
-//       .prompt({
-
-//         name: "employee",
-//         type: "rawlist",
-//         choices: function () {
-//           var choiceArray2 = [];
-//           for (var i = 0; i < empdata.length; i++) {
-//             console.log(empdata);
-//             // console.log("i =" + i + empdata[i]);
-//             var emp_name = empdata[i].first_name + " " + empdata[i].last_name;
-//             console.log("i=" + i + " name = " + emp_name);
-//             choiceArray2.push(emp_name);
-//           }
-
-//           return choiceArray2;
-//         },
-//         message: "Which employee would you like to update?"
-//       }).then(function (answer2) {
-//         console.log("answer2");
-//         console.log(answer2.employee);
-
-//         // get the information of the chosen item
-//         var chosenItem;
-//         // var role_id;
-//         for (var i = 0; i < results.length; i++) {
-//           if (results[i].name === answer.choice) {
-//             chosenItem = results[i].name;
-//             dept_id = results[i].id;
-//           }
-//         }
-
-//         //convert salary from string to decimal
-//         let salary = parseFloat(answer.salary).toFixed(2);
-
-//         console.log("The new title of role is: " + answer.title);
-//         console.log("The salary is: " + salary);
-//         console.log("The department id: " + dept_id + ": " + chosenItem);
-//         showAllRoles();
-
-//       });
-//   });
-// }
 
 function addRole() {
   // query the database for all department Ids
@@ -434,33 +385,33 @@ function updateEmployeeRole() {
         },
         message: "Which employee would you like to update the role?"
       }).then(function (answer2) {
-        console.log("answer2");
-        console.log(answer2);
-        console.log("empdata");
-        console.log(empdata);
+        // console.log("answer2");
+        // console.log(answer2);
+        // console.log("empdata");
+        // console.log(empdata);
         for (var i = 0; i < empdata.length; i++) {
           // console.log(empdata[i]);
           var tempemp = empdata[i].first_name + " " + empdata[i].last_name;
           console.log("i = " + i + " employee= " + tempemp);
           if (tempemp === answer2.employee) {
-            console.log("employee matched");
-            console.log("matched " + tempemp);
+            // console.log("employee matched");
+            // console.log("matched " + tempemp);
             // manager = empdata[i].first_name + " " + empdata[i].last_name;
             employee = tempemp;
             emp_id = empdata[i].id;
             updateEmployee.emp_id = emp_id;
           }
         }
-        console.log("updateEmployee")
-        console.log(updateEmployee);
+        // console.log("updateEmployee")
+        // console.log(updateEmployee);
 
         connection.query("SELECT * FROM role", function (err, results) {
           if (err) throw err;
-      
-           // once you have the roles, prompt the user for which they'd like to bid on
+
+          // once you have the roles, prompt the user for which they'd like to bid on
           inquirer
             .prompt([
-              {     
+              {
                 name: "role",
                 type: "rawlist",
                 choices: function () {
@@ -473,33 +424,54 @@ function updateEmployeeRole() {
                 },
                 message: "What is the employees new role?"
               }
-      
+
             ])
             .then(function (answer) {
               // get the information of the role chosen
-             var newrole_id;
+              var newrole_id;
               console.log(answer.role);
               for (var i = 0; i < results.length; i++) {
                 // console.log(results[i]);
                 if (results[i].title === answer.role) {
-                  console.log("title roles matched" +results[i].title );
+                  console.log("title roles matched" + results[i].title);
                   title = results[i].title;
                   // dept_id = results[i].department_id;
                   newrole_id = results[i].id;
                   updateEmployee.new_roleid = newrole_id;
-                  console.log(  updateEmployee.new_roleid);
+                  // console.log(updateEmployee.new_roleid);
                 }
               }
-      
-               console.log("update employee after role picked");
-               console.log(updateEmployee);
-               console.log("Employee " + employee + " new role is " + title);
-             
-            });
-          });
-  
+
+              console.log("update employee after role picked");
+              // console.log(updateEmployee);
+              console.log("Employee id = " + emp_id + " Employee " + employee + " new role is " + title + "role id =" + newrole_id);
+              //conver the role ids into int
+              newrole_id = parseInt(newrole_id);
+              emp_id = parseInt(emp_id);
+
+              connection.query(
+                "UPDATE employee SET ? WHERE ?",
+                [{
+                  role_id: newrole_id
+                },
+                {
+                  id: emp_id
+                }
+                ],
+                function (err, res) {
+                  if (err) throw err;
+                  console.log(res.affectedRows + " employee updated!\n");
+                  showAllEmployees();
+                }
+              );
+
+
+            })
+
         });
-  
-    })
-  
-  }
+      });
+
+  });
+
+}
+
